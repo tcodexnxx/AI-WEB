@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>CyberSec AI</title>
+  <style>
+    body {
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+    }
+
+```
+h3 {
+  padding-left: 10px;
+}
+
+#chat {
+  height: 85vh;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+input {
+  width: 100%;
+  background: black;
+  color: #00ff00;
+  border: none;
+  outline: none;
+  padding: 10px;
+  font-family: monospace;
+}
+```
+
+  </style>
+</head>
+<body>
+
+<h3>💻 CyberSec AI Terminal</h3>
+
+<div id="chat"></div>
+<input id="msg" placeholder="Ketik di sini..." autofocus>
+
+<script>
+const input = document.getElementById("msg");
+const chat = document.getElementById("chat");
+
+input.addEventListener("keydown", async (e) => {
+  if (e.key === "Enter") {
+    let text = input.value;
+    input.value = "";
+
+    addMessage("> " + text);
+    addMessage("AI thinking...");
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: text })
+      });
+
+      const data = await res.json();
+      typeEffect(data.reply);
+    } catch (err) {
+      addMessage("Error: gagal konek ke server");
+    }
+  }
+});
+
+function addMessage(msg) {
+  const p = document.createElement("p");
+  p.textContent = msg;
+  chat.appendChild(p);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function typeEffect(text) {
+  let i = 0;
+  const p = document.createElement("p");
+  chat.appendChild(p);
+
+  const interval = setInterval(() => {
+    p.textContent += text[i];
+    i++;
+    if (i >= text.length) clearInterval(interval);
+  }, 10);
+}
+</script>
+
+</body>
+</html>
+
